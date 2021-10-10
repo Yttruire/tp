@@ -32,7 +32,8 @@ public class TypicalStudents {
     public static final Student CARL = new StudentBuilder().withName("Carl Kurz").withTelegramHandle("@carl_kurz")
             .withEmail("heinz@example.com").withGroup(TYPICAL_GROUP_CS2103T).build();
     public static final Student DANIEL = new StudentBuilder().withName("Daniel Meier")
-            .withTelegramHandle("@daniel_meier").withEmail("cornelia@example.com").withGroup(TYPICAL_GROUP_CS2103T).build();
+            .withTelegramHandle("@daniel_meier").withEmail("cornelia@example.com")
+            .withGroup(TYPICAL_GROUP_CS2103T).build();
     public static final Student ELLE = new StudentBuilder().withName("Elle Meyer").withTelegramHandle("@elle_meyer")
             .withEmail("werner@example.com").withGroup(TYPICAL_GROUP_CS2103T).build();
     public static final Student FIONA = new StudentBuilder().withName("Fiona Kunz").withTelegramHandle("@fiona_kunz")

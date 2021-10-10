@@ -67,7 +67,8 @@ public class UniqueGroupListTest {
 
     @Test
     public void setGroup_targetGroupNotInList_throwsGroupNotFoundException() {
-        assertThrows(GroupNotFoundException.class, () -> uniqueGroupList.setGroup(TYPICAL_GROUP_CS2103T, TYPICAL_GROUP_CS2103T));
+        assertThrows(GroupNotFoundException.class, () ->
+                uniqueGroupList.setGroup(TYPICAL_GROUP_CS2103T, TYPICAL_GROUP_CS2103T));
     }
 
     @Test
@@ -102,7 +103,8 @@ public class UniqueGroupListTest {
     public void setGroup_editedGroupHasNonUniqueIdentity_throwsDuplicateGroupException() {
         uniqueGroupList.add(TYPICAL_GROUP_CS2103T);
         uniqueGroupList.add(TYPICAL_GROUP_CS2101);
-        assertThrows(DuplicateGroupException.class, () -> uniqueGroupList.setGroup(TYPICAL_GROUP_CS2103T, TYPICAL_GROUP_CS2101));
+        assertThrows(DuplicateGroupException.class, () ->
+                uniqueGroupList.setGroup(TYPICAL_GROUP_CS2103T, TYPICAL_GROUP_CS2101));
     }
 
     @Test
@@ -160,7 +162,7 @@ public class UniqueGroupListTest {
 
     @Test
     public void asUnmodifiableObservableList_modifyList_throwsUnsupportedOperationException() {
-        assertThrows(UnsupportedOperationException.class, ()
-                -> uniqueGroupList.asUnmodifiableObservableList().remove(0));
+        assertThrows(UnsupportedOperationException.class, () ->
+                uniqueGroupList.asUnmodifiableObservableList().remove(0));
     }
 }

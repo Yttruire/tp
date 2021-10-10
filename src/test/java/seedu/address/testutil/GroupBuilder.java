@@ -3,10 +3,6 @@ package seedu.address.testutil;
 import seedu.address.model.group.Description;
 import seedu.address.model.group.Group;
 import seedu.address.model.group.GroupName;
-import seedu.address.model.student.Email;
-import seedu.address.model.student.Name;
-import seedu.address.model.student.Student;
-import seedu.address.model.student.TelegramHandle;
 
 /**
  * A utility class to help with building Student objects.
