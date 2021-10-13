@@ -1,0 +1,46 @@
+{
+  "_comment": "AddressBook save file which contains the same Student values as in TypicalStudents#getTypicalAddressBook()",
+  "students" : [ {
+    "name" : "Alice Pauline",
+    "telegramHandle" : "@alice_pauline",
+    "email" : "alice@example.com",
+    "groupName": "CS2103T"
+  }, {
+    "name" : "Benson Meier",
+    "telegramHandle" : "@benson_meier",
+    "email" : "johnd@example.com",
+    "groupName": "CS2103T"
+  }, {
+    "name" : "Carl Kurz",
+    "telegramHandle" : "@carl_kurz",
+    "email" : "heinz@example.com",
+    "groupName": "CS2103T"
+  }, {
+    "name" : "Daniel Meier",
+    "telegramHandle" : "@daniel_meier",
+    "email" : "cornelia@example.com",
+    "groupName": "CS2103T"
+  }, {
+    "name" : "Elle Meyer",
+    "telegramHandle" : "@elle_meyer",
+    "email" : "werner@example.com",
+    "groupName": "CS2103T"
+  }, {
+    "name" : "Fiona Kunz",
+    "telegramHandle" : "@fiona_kunz",
+    "email" : "lydia@example.com",
+    "groupName": "CS2103T"
+  }, {
+    "name" : "George Best",
+    "telegramHandle" : "@george_best",
+    "email" : "anna@example.com",
+    "groupName": "CS2103T"
+  } ],
+  "groups" : [ {
+    "name" : "CS2103T",
+    "description" : "A Software engineering module"
+  }, {
+    "name" : "CS2101",
+    "description" : "An effective communication module"
+  } ]
+}

@@ -1,60 +1,77 @@
 package seedu.address.logic.commands;
 
 import static java.util.Objects.requireNonNull;
-import static seedu.address.logic.parser.CliSyntax.PREFIX_ADDRESS;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_EMAIL;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_GROUP_NAME;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
-import static seedu.address.logic.parser.CliSyntax.PREFIX_PHONE;
-import static seedu.address.logic.parser.CliSyntax.PREFIX_TAG;
+import static seedu.address.logic.parser.CliSyntax.PREFIX_TELEGRAM_HANDLE;
+
+import java.util.List;
 
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.Model;
-import seedu.address.model.person.Person;
+import seedu.address.model.group.Group;
+import seedu.address.model.group.GroupContainsKeywordsPredicate;
+import seedu.address.model.group.GroupName;
+import seedu.address.model.student.Student;
+
 
 /**
- * Adds a person to the address book.
+ * Adds a student to the address book.
  */
 public class AddCommand extends Command {
 
     public static final String COMMAND_WORD = "add";
 
-    public static final String MESSAGE_USAGE = COMMAND_WORD + ": Adds a person to the address book. "
+    public static final String MESSAGE_USAGE = COMMAND_WORD + ": Adds a student to the address book. "
             + "Parameters: "
             + PREFIX_NAME + "NAME "
-            + PREFIX_PHONE + "PHONE "
+            + PREFIX_TELEGRAM_HANDLE + "TELEGRAM HANDLE "
             + PREFIX_EMAIL + "EMAIL "
-            + PREFIX_ADDRESS + "ADDRESS "
-            + "[" + PREFIX_TAG + "TAG]...\n"
+            + PREFIX_GROUP_NAME + "GROUPNAME "
             + "Example: " + COMMAND_WORD + " "
             + PREFIX_NAME + "John Doe "
-            + PREFIX_PHONE + "98765432 "
+            + PREFIX_TELEGRAM_HANDLE + "@john_doe "
             + PREFIX_EMAIL + "johnd@example.com "
-            + PREFIX_ADDRESS + "311, Clementi Ave 2, #02-25 "
-            + PREFIX_TAG + "friends "
-            + PREFIX_TAG + "owesMoney";
+            + PREFIX_GROUP_NAME + "CS2103T ";
 
-    public static final String MESSAGE_SUCCESS = "New person added: %1$s";
-    public static final String MESSAGE_DUPLICATE_PERSON = "This person already exists in the address book";
+    public static final String MESSAGE_SUCCESS = "New student added: %1$s";
+    public static final String MESSAGE_DUPLICATE_STUDENT = "This student already exists in the address book";
+    public static final String MESSAGE_GROUP_NONEXISTENT =
+            "The group indicated does not exist. Please create it first.";
 
-    private final Person toAdd;
+    private final Student toAdd;
 
     /**
-     * Creates an AddCommand to add the specified {@code Person}
+     * Creates an AddCommand to add the specified {@code Student}
      */
-    public AddCommand(Person person) {
-        requireNonNull(person);
-        toAdd = person;
+    public AddCommand(Student student) {
+        requireNonNull(student);
+        toAdd = student;
     }
 
     @Override
     public CommandResult execute(Model model) throws CommandException {
         requireNonNull(model);
 
-        if (model.hasPerson(toAdd)) {
-            throw new CommandException(MESSAGE_DUPLICATE_PERSON);
+        if (model.hasStudent(toAdd)) {
+            throw new CommandException(MESSAGE_DUPLICATE_STUDENT);
         }
 
-        model.addPerson(toAdd);
+        if (!model.hasGroup(toAdd.getGroup())) {
+            throw new CommandException(MESSAGE_GROUP_NONEXISTENT);
+        }
+
+        // Retrieve existing group in model
+        GroupName groupName = toAdd.getGroup().getGroupName();
+        model.updateFilteredGroupList(new GroupContainsKeywordsPredicate(List.of(groupName.toString())));
+        Group retrievedGroup = model.getFilteredGroupList().get(0);
+
+        Student studentToAdd =
+                new Student(toAdd.getName(), toAdd.getTelegramHandle(), toAdd.getEmail(), retrievedGroup);
+
+        // Add student with the group fetched from the data in the model
+        model.addStudent(studentToAdd);
         return new CommandResult(String.format(MESSAGE_SUCCESS, toAdd));
     }
 

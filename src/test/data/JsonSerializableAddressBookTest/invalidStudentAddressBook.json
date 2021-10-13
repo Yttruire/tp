@@ -1,0 +1,12 @@
+{
+  "students": [ {
+    "name": "Hans Muster",
+    "telegramHandle": "@hans_muster",
+    "email": "invalid@email!3e",
+    "groupName": "CS2103T"
+  } ],
+  "groups" : [ {
+    "name" : "CS2103T",
+    "description" : "A Software engineering module"
+  } ]
+}

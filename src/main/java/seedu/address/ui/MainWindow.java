@@ -31,7 +31,8 @@ public class MainWindow extends UiPart<Stage> {
     private Logic logic;
 
     // Independent Ui parts residing in this Ui container
-    private PersonListPanel personListPanel;
+    private StudentListPanel studentListPanel;
+    private GroupListPanel groupListPanel;
     private ResultDisplay resultDisplay;
     private HelpWindow helpWindow;
 
@@ -42,7 +43,10 @@ public class MainWindow extends UiPart<Stage> {
     private MenuItem helpMenuItem;
 
     @FXML
-    private StackPane personListPanelPlaceholder;
+    private StackPane listPanelPlaceholder;
+
+    @FXML
+    private StackPane groupListPanelPlaceholder;
 
     @FXML
     private StackPane resultDisplayPlaceholder;
@@ -106,12 +110,16 @@ public class MainWindow extends UiPart<Stage> {
         });
     }
 
+    private void showStudents() {
+        studentListPanel = new StudentListPanel(logic.getFilteredStudentList());
+        listPanelPlaceholder.getChildren().add(studentListPanel.getRoot());
+    }
+
     /**
      * Fills up all the placeholders of this window.
      */
     void fillInnerParts() {
-        personListPanel = new PersonListPanel(logic.getFilteredPersonList());
-        personListPanelPlaceholder.getChildren().add(personListPanel.getRoot());
+        showStudents();
 
         resultDisplay = new ResultDisplay();
         resultDisplayPlaceholder.getChildren().add(resultDisplay.getRoot());
@@ -163,8 +171,17 @@ public class MainWindow extends UiPart<Stage> {
         primaryStage.hide();
     }
 
-    public PersonListPanel getPersonListPanel() {
-        return personListPanel;
+    private void handleShowGroups() {
+        groupListPanel = new GroupListPanel(logic.getFilteredGroupList());
+        listPanelPlaceholder.getChildren().add(groupListPanel.getRoot());
+    }
+
+    public StudentListPanel getStudentListPanel() {
+        return studentListPanel;
+    }
+
+    public GroupListPanel getGroupListPanel() {
+        return groupListPanel;
     }
 
     /**
@@ -177,6 +194,12 @@ public class MainWindow extends UiPart<Stage> {
             CommandResult commandResult = logic.execute(commandText);
             logger.info("Result: " + commandResult.getFeedbackToUser());
             resultDisplay.setFeedbackToUser(commandResult.getFeedbackToUser());
+
+            if (commandResult.isShowGroups()) {
+                handleShowGroups();
+            } else {
+                showStudents();
+            }
 
             if (commandResult.isShowHelp()) {
                 handleHelp();
