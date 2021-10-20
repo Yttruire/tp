@@ -125,12 +125,13 @@ How the parsing works:
 
 The `Model` component,
 
-- stores the CS book data i.e., all `Student` objects (which are contained in a `UniqueStudentList` object).
+- stores the CS book data i.e., all `Student` objects (which are contained in a `UniqueStudentList` object) as well as all `Group` objects (which are contained in a `UniqueGroupList` object).
 - stores the currently 'selected' `Student` objects (e.g., results of a search query) as a separate _filtered_ list which is exposed to outsiders as an unmodifiable `ObservableList<Student>` that can be 'observed' e.g. the UI can be bound to this list so that the UI automatically updates when the data in the list change.
+- stores the currently 'selected' `Group` objects (e.g., results of a search query) as a separate _filtered_ list similarly to `Student` objects with an `ObservableList<Group>`.
 - stores a `UserPref` object that represents the user’s preferences. This is exposed to the outside as a `ReadOnlyUserPref` objects.
 - does not depend on any of the other three components (as the `Model` represents data entities of the domain, they should make sense on their own without depending on other components)
 
-<div markdown="span" class="alert alert-info">:information_source: **Note:** An alternative (arguably, a more OOP) model is given below. It has a `Tag` list in the `CsBook`, which `Student` references. This allows `CsBook` to only require one `Tag` object per unique tag, instead of each `Student` needing their own `Tag` objects.<br>
+<div markdown="span" class="alert alert-info">:information_source: **Note:** How `Group` and `Student` objects are stored and referenced by each other is shown in the diagram below. In the future, the model will be changed such that each `Student` will only have a `GroupName` to identify the `Group` it is associated with, and each `Group` will only store the `Name` of the `Student` in the `Group`. This will be done in hopes of looser coupling between the two classes.<br>
 
 <img src="images/BetterModelClassDiagram.png" width="450" />
 
@@ -240,6 +241,76 @@ The following sequence diagram shows how the overall decryption operation works:
     - Pros: Uses less storage by encrypting data and not fields.
       (e.g. `name: Jun Wei` is encrypted to become `name: ????????????????????`)
     - Cons: Less secure compared to encrypting the entire JSON file.
+
+### Student Group Management Feature
+
+#### Implementation
+
+The management of `Group` objects and `Student` objects is done by the `ModelManager`. 
+While the choosing of operations to perform is determined by the user through the use of commands 
+(E.g. `AddCommand`), we mainly discuss how `Group` objects reference `Student` objects and vice versa 
+through discussing the implementation of the `ModelManager` class and `Student`, `Group` object fields.
+
+The relevant operations for managing groups, with regard to `Student` operations are as follows:
+- `ModelManager#deleteStudent(Student)` - Deletes a `Student` from the model, and remove the `Student` reference from 
+the respective `Group` that the student belongs to
+- `ModelManager#addStudent(Student)` - Adds a `Student` to the model, and add a reference to the `Student` in the 
+respective `Group` the student is assigned to
+ 
+The relevant operations for managing groups, with regard to `Group` operations are as follows:
+- `ModelManager#deleteGroup(Group)` - Deletes a `Group` from the model, as well as delete all `Student` objects 
+associated with the group
+- `ModelManager#addGroup(Group)` - Adds a `Group` to the model
+
+Given below is an example usage scenario and how the management of groups behaves at each step.
+
+Step 1. Starting with an empty model, the user will first have to create an empty `Group` to be able to add `Student` 
+objects to. The user executes a command that will create a new `Group` and add it to the model by calling 
+`ModelManager#addGroup(Group)`.
+
+Step 2. After the `Group` is added to the model, the user then executes a command to create a new `Student` that will 
+be a part of an existing group. This command will then call `ModelManager#addStudent(Student)` with the created 
+`Student` which adds the student to the model, and then finds the corresponding `Group` that the `Student` will be 
+added to, and add a reference to the `Student` in the `Group`.
+
+(Optional steps) The user may manipulate the groups or individual students using any of the available commands, but
+these will not be discussed here as the focus is on how the grouping of students is done.
+
+Step 3. The user executes a command to delete a `Student` in order to, for example, remove a past student. The command
+then invokes `ModelManager#deleteStudent(Student)`, which will find the respective `Group` that the `Student` belongs to
+using the stored `Group` reference in the `Student` and remove the `Group`'s reference to the `Student`. Then, the 
+`Student` itself is deleted from the model.
+
+Step 4. The user executes a command to delete a `Group` in order to, for example, remove an entire group and its
+students after the user has finished teaching a module. The command invokes `ModelManager#deleteGroup(Group)`, which
+finds the `Group` in the model, and for each `Student` reference found, removes them from `csbook`. After all `Student`
+objects associated with the `Group` has been removed, the `Group` itself is then deleted.
+
+#### Design considerations
+
+**Aspect: How a Student references a Group and vice versa:**
+
+- **Alternative 1 (current choice):** Each `Group` stores a reference of `Student` and vice versa
+
+    - Pros: More straightforward to implement.
+    - Cons: Increases coupling between `Group` and `Student` significantly 
+
+- **Alternative 2:** Each `Group` only stores unique student `Name`s and `Student` stores unique `GroupName`s
+    - Pros: Reduces coupling between `Group` and `Student` significantly
+    - Cons: We must ensure that both `Name` and `GroupName`s are all unique throughout the `csbook`
+
+**Aspect: What happens when `ModelManager#deleteGroup(Group)` command is executed:**
+
+- **Alternative 1 (current choice):** Deletes all `Student` objects associated with the `Group`
+
+    - Pros: Easy to implement.
+    - Cons: Restricts us to just one `Group` per `Student` when implemented as-is
+
+- **Alternative 2:** Only delete the `Group` itself and only remove the `Group` reference within `Student` objects
+
+    - Pros: Allows for a `Student` to belong to multiple `Group`s
+    - Cons: When implemented as-is, allows `Student`s to not belong to any `Group`, violating our assumption that all 
+`Student`s have a `Group`
 
 ### \[Proposed\] Undo/redo feature
 
